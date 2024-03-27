@@ -2,6 +2,7 @@ package com.devsuperior.demo.resources;
 
 import com.devsuperior.demo.dto.CityDTO;
 import com.devsuperior.demo.services.CityService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,7 @@ public class CityResource {
     private CityService cityservice;
 
 
+
     @GetMapping
     public ResponseEntity<List<CityDTO>> findAll(){
 
@@ -25,8 +27,9 @@ public class CityResource {
         return ResponseEntity.ok().body(list);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<CityDTO> insert(@RequestBody CityDTO dto){
+    public ResponseEntity<CityDTO> insert(@Valid @RequestBody CityDTO dto){
         dto= cityservice.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();

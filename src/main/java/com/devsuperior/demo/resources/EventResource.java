@@ -5,6 +5,7 @@ import com.devsuperior.demo.dto.CityDTO;
 import com.devsuperior.demo.dto.EventDTO;
 import com.devsuperior.demo.entities.City;
 import com.devsuperior.demo.services.EventService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,15 +22,16 @@ public class EventResource {
     @Autowired
     private EventService eventService;
 
+
     @GetMapping
     public ResponseEntity<Page<EventDTO>> findAll(Pageable pageable){
 
         Page<EventDTO>list= eventService.findAllPaged(pageable);
         return ResponseEntity.ok().body(list);
     }
-
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
     @PostMapping
-    public ResponseEntity<EventDTO> insert(@RequestBody EventDTO dto){
+    public ResponseEntity<EventDTO> insert(@Valid @RequestBody EventDTO dto){
         dto= eventService.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
